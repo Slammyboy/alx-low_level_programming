@@ -1,50 +1,75 @@
+	return (NULL);
 }
 
 /**
- * shash_table_print_rev - Prints a sorted hash table in reverse order.
- * @ht: A pointer to the sorted hash table to print.
+ * shash_table_print - function to print sorted hash table in alphanumeric
+ * order.
+ * @ht: pointer to sorted hash table
  */
-void shash_table_print_rev(const shash_table_t *ht)
+void shash_table_print(const shash_table_t *ht)
 {
 	shash_node_t *node;
+	char many = 0;
 
 	if (ht == NULL)
 		return;
-
-	node = ht->stail;
-	printf("{");
-	while (node != NULL)
+	putchar('{');
+	node = ht->shead;
+	while (node)
 	{
-		printf("'%s': '%s'", node->key, node->value);
-		node = node->sprev;
-		if (node != NULL)
+		if (many)
 			printf(", ");
+		printf("'%s': '%s'", node->key, node->value);
+		many = 1;
+		node = node->snext;
 	}
 	printf("}\n");
 }
 
 /**
- * shash_table_delete - Deletes a sorted hash table.
- * @ht: A pointer to the sorted hash table.
+ * shash_table_print_rev - function to print sorted hash table in
+ * reverse alphanumeric order.
+ * @ht: pointer to sorted hash table
  */
-void shash_table_delete(shash_table_t *ht)
+void shash_table_print_rev(const shash_table_t *ht)
 {
-	shash_table_t *head = ht;
-	shash_node_t *node, *tmp;
+	shash_node_t *node;
+	char many = 0;
 
 	if (ht == NULL)
 		return;
-
-	node = ht->shead;
+	putchar('{');
+	node = ht->stail;
 	while (node)
 	{
-		tmp = node->snext;
-		free(node->key);
-		free(node->value);
-		free(node);
-		node = tmp;
+		if (many)
+			printf(", ");
+		printf("'%s': '%s'", node->key, node->value);
+		many = 1;
+		node = node->sprev;
 	}
+	printf("}\n");
+}
 
-	free(head->array);
-	free(head);
+/**
+ * shash_table_delete - function to free hash table
+ * @ht: pointer to sorted hash table
+ */
+void shash_table_delete(shash_table_t *ht)
+{
+	shash_node_t *head, *next;
+
+	if (ht == NULL || ht->array == NULL)
+		return;
+	head = ht->shead;
+	while (head)
+	{
+		next = head->next;
+		free(head->key);
+		free(head->value);
+		free(head);
+		head = next;
+	}
+	free(ht->array);
+	free(ht);
 }
